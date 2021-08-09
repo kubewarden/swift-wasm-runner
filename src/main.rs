@@ -1,4 +1,5 @@
 use anyhow::{anyhow, Result};
+use std::path::Path;
 use wasi_common::WasiCtx;
 use wasmtime::{AsContextMut, Engine, Linker, Module, Store};
 
@@ -9,7 +10,7 @@ struct WasmStore {
     wasi_ctx: WasiCtx,
 }
 
-pub fn main() -> Result<()> {
+fn run_wasm(module_file: String) -> Result<()> {
     let engine = Engine::default();
     let mut linker: Linker<WasmStore> = Linker::new(&engine);
 
@@ -69,16 +70,6 @@ pub fn main() -> Result<()> {
         console_log_func(store.as_context_mut()),
     )?;
 
-    if std::env::args().len() != 2 {
-        eprintln!("Wrong number of arguments:");
-        eprintln!("  swiftwasm-wapc-runner <policy.wasm>");
-        std::process::exit(1);
-    }
-    let module_file = std::env::args()
-        .skip(1)
-        .next()
-        .ok_or_else(|| anyhow!("Cannot get name of the module to load"))?;
-
     let module = Module::from_file(&engine, module_file.clone())
         .map_err(|e| anyhow!("Cannot open wasm module {}: {:?}", module_file, e))?;
 
@@ -104,4 +95,34 @@ pub fn main() -> Result<()> {
             }
         }
     }
+}
+
+pub fn main() -> Result<()> {
+    if std::env::args().len() != 2 {
+        eprintln!("Wrong number of arguments:");
+        eprintln!("  swiftwasm-wapc-runner <policy.wasm>");
+        std::process::exit(1);
+    }
+    let module_file = std::env::args()
+        .nth(1)
+        .ok_or_else(|| anyhow!("Cannot get name of the module to load"))?;
+
+    let invocation_name: String = std::env::args()
+        .next()
+        .and_then(|name| {
+            Path::new(&name)
+                .file_name()
+                .and_then(|file_name| file_name.to_str())
+                .and_then(|file_name_str| Some(String::from(file_name_str)))
+        })
+        .ok_or_else(|| anyhow!("Cannot infer how the program was invoked"))?;
+    if invocation_name != env!("CARGO_PKG_NAME") {
+        println!(
+            "This is not the {} binary you expected, it's {} under disguise",
+            invocation_name,
+            env!("CARGO_PKG_NAME")
+        );
+    }
+
+    run_wasm(module_file)
 }
