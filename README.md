@@ -3,22 +3,21 @@
 This is a simple Wasm runner built on top of Wasmtime. It behaves exactly like
 the `wasmtime` and the `wasmer` cli tools.
 
-It has been built to allow unit testing of Kubewarden policies writting using
+It has been built to allow unit testing of Kubewarden policies written using
 the Swift programming language.
 
 ## Why?
 
-The Kubewarden policies writting using Swift leverage the [`policy-sdk-swift`](https://github.com/kubewarden/policy-sdk-swift)
+The Kubewarden policies written using Swift leverage the [`policy-sdk-swift`](https://github.com/kubewarden/policy-sdk-swift)
 library, which depends on the [`wapc-guest-swift`](https://github.com/wapc/wapc-guest-swift) library.
 
 The Wasm modules built will then import a series of [waPC](https://wapc.io/)
-related functions. All the waPC related functions are going to be imported
-by the module, even if they are not used.
+related functions. These functions must be provided by the Wasm host when
+the unit tests are run. This causes tools like `wasmer` and `wasmtime`
+to fail at runtime due to the unresolved imports.
 
-Even the unit tests of the Swift code will require these functions, which poses
-a problem because neither `wasmer` nor `wasmtime` provide them.
-
-This is the reason that lead to the creation of this simple Wasm host.
+This project provides a a simple Wasm host that can satisfy these function import
+requirements.
 
 ## How it works
 
@@ -41,4 +40,4 @@ This repository provides a container image that is based on the
 `swift-policy-runner` instead of the default `wasmer` binary.
 
 Nothing has to be done if you created your Kubewarden Swift policy starting
-from our template.
+from [our template](https://github.com/kubewarden/swift-policy-template).
