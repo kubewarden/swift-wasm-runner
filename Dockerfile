@@ -11,7 +11,7 @@ RUN cargo install --target x86_64-unknown-linux-musl --root /usr/local/cargo --p
 
 
 # final image
-FROM ghcr.io/swiftwasm/swiftwasm-action:5.3
+FROM ghcr.io/swiftwasm/swiftwasm-action:5.5
 LABEL org.opencontainers.image.source https://github.com/kubewarden/swift-wasm-runner
 
 # Overwrite the wasmer binary, `cartoon test` doesn't have a way to specify which
