@@ -1,5 +1,5 @@
 # build image
-FROM rust:1.54-buster as builder
+FROM rust:1.58-buster as builder
 
 RUN rustup target add x86_64-unknown-linux-musl && \
   apt-get update && \
