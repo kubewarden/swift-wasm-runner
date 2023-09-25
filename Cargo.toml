@@ -9,5 +9,5 @@ edition = "2018"
 [dependencies]
 wasmtime = "0.29.0"
 wasmtime-wasi = "0.29.0"
-wasi-common = "0.29.0"
+wasi-common = "13.0.0"
 anyhow = "1.0.42"
