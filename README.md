@@ -1,3 +1,6 @@
+> **Project temporarily archived:** currently swiftwasm suffers from stability issues
+> We are going to archive this project until these issues are solved
+
 # swift-wasm-runner
 
 This is a simple Wasm runner built on top of Wasmtime. It behaves exactly like
